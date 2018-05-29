@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS Variables</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="myJS()" style="margin:0;">
+
+<div id="main"></div>
+
+<script type="text/javascript">
+
+    function Sum(n1, n2)
+    {
+        // These will be global when called from the myJSAgain() function.
+        this.number1 = Number(n1);
+        this.number2 = Number(n2);
+
+        return this.number1 + this.number2;
+    }
+
+    function myJS()
+    {
+        // Side-effect: creates a global variable named 'total'.
+        total = new Sum(3, 4);
+        alert( window.total ); // Object
+
+        // Side-effect: modifies the global variable named 'total'.
+        myJSAgain();
+
+        // Global 'total' variable got clobbered.
+        alert( window.total ); // 3
+    }
+
+    function myJSAgain()
+    {
+        // Missing 'new' keyword. Will clobber the global 'total' variable.
+        total = Sum(1, 2);
+
+        // There are now two sets of 'number1' and 'number2' variables!
+        alert( window.number2 ); // 2
+    }
+
+</script>
+
+</body>
+
+</html>

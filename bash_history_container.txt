@@ -1,0 +1,411 @@
+########################################################
+### Chapter 1 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+mv /srv/www /srv/www.OLD
+ln -s /srv/fasterweb/chapter_1 /srv/www
+cd /srv/www
+/etc/init.d/mysql start
+/etc/init.d/php-fpm start
+/etc/init.d/httpd start
+touch /srv/www/index.php
+echo "<?php phpinfo();" >> /srv/www/index.php
+cat /srv/www/index.php
+ab -k -l -c 2 -n 2000 localhost/index.html
+ab -k -l -c 2 -n 2000 localhost/index.php
+wget -O siege-4.0.2.tar.gz http://download.joedog.org/siege/siege-4.0.2.tar.gz
+tar -xzvf siege-4.0.2.tar.gz
+cd siege-4.0.2
+./configure
+make
+make install
+man siege
+siege -b -c 3000 -r 100 localhost/index.html
+cd /srv/www
+touch urlfile.txt
+for i in {1..4}; do echo "http://localhost/index.html" >> urlfile.txt ; done
+bombardment urlfile.txt 10 100 4 0
+echo "http://localhost/index.php" > urlfile.txt
+for i in {1..3}; do echo "http://localhost/index.php" >> urlfile.txt ; done
+bombardment urlfile.txt 10 100 4 0
+pecl install xdebug
+echo -e "zend_extension=$( php -i | grep extensions | awk '{print $3}' )/xdebug.so\n" >> /etc/php.ini
+echo -e "xdebug.remote_enable = 1\n" >> /etc/php.ini
+echo -e "xdebug.remote_enable_trigger = 1\n" >> /etc/php.ini
+echo -e "xdebug.remote_connect_back = 1\n" >> /etc/php.ini
+echo -e "xdebug.idekey = PHPSTORM\n" >> /etc/php.ini
+echo -e "xdebug.profiler_enable = 1\n" >> /etc/php.ini
+echo -e "xdebug.profiler_enable_trigger = 1\n" >> /etc/php.ini
+vi /etc/php.ini
+/etc/init.d/php-fpm restart
+ifconfig
+ls -lsa /tmp
+cat /tmp/cachegrind.out.411
+cd
+wget -O sakila-db.tar.gz https://downloads.mysql.com/docs/sakila-db.tar.gz
+tar -xzvf sakila-db.tar.gz
+mysql -uroot < sakila-db/sakila-schema.sql
+mysql -uroot < sakila-db/sakila-data.sql
+mysqlslap --user=root --host=localhost --concurrency=20--number-of-queries=1000 --create-schema=sakila --query="SELECT * FROM film;" --delimiter=";" --verbose --iterations=2 --debug-info
+mysqlslap --user=root --host=localhost --concurrency=50 --number-of-queries=1000 --create-schema=sakila --query="SELECT * FROM film;" --delimiter=";" --verbose --iterations=2 --debug-info
+########################################################
+### Chapter 2 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_2 /srv/www
+cd /srv/www
+wget -O blackfire-agent https://packages.blackfire.io/binaries/blackfire-agent/1.17.0/blackfire-agent-linux_static_amd64
+mv blackfire-agent /usr/local/bin/
+chmod +x /usr/local/bin/blackfire-agent
+mkdir -p /etc/blackfire
+cp /srv/www/agent /etc/blackfire/
+mkdir -p /var/run/blackfire
+touch /var/run/blackfire/agent.sock
+blackfire-agent -register
+blackfire-agent start &
+wget -O blackfire https://packages.blackfire.io/binaries/blackfire-agent/1.17.0/blackfire-cli-linux_static_amd64
+mv blackfire /usr/local/bin/
+chmod +x /usr/local/bin/blackfire
+blackfire config
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.20.0/blackfire-php-linux_amd64-php-71.so
+php -i | grep 'extension_dir'
+mv blackfire.so $( php -i | grep extensions | awk '{print $3}' )
+sed -i 's/zend_extension=\/usr\/lib\/php\/extensions\/no-debug-non-zts-20160303\/xdebug.so/;zend_extension=\/usr\/lib\/php\/extensions\/no-debug-non-zts-20160303\/xdebug.so/' /etc/php.ini
+sed -i 's/^xdebug/;xdebug/' /etc/php.ini
+cat >>/etc/php.ini << 'EOF'
+
+[blackfire]
+extension=blackfire.so
+; On Windows use the following configuration:
+; extension=php_blackfire.dll
+
+; Sets the socket where the agent is listening.
+; Possible value can be a unix socket or a TCP address.
+; Defaults to unix:///var/run/blackfire/agent.sock on Linux,
+; unix:///usr/local/var/run/blackfire-agent.sock on MacOSX,
+; and to tcp://127.0.0.1:8307 on Windows.
+;blackfire.agent_socket = unix:///var/run/blackfire/agent.sock
+
+blackfire.agent_timeout = 0.25
+
+; Log verbosity level (4: debug, 3: info, 2: warning, 1: error)
+;blackfire.log_level = 1
+
+; Log file (STDERR by default)
+;blackfire.log_file = /tmp/blackfire.log
+
+;blackfire.server_id =
+
+;blackfire.server_token =
+EOF
+/etc/init.d/php-fpm restart
+blackfire curl http://localhost/index.php
+gem install travis
+travis encrypt-file /srv/www/.blackfire.travis.ini -r [your_Github_repository_name_here]
+sed -i 's/#Include \/etc\/httpd\/extra\/httpd-info.conf/Include \/etc\/httpd\/extra\/httpd-info.conf/' /etc/httpd/httpd.conf
+sed -i 's/Require ip 127/Require ip 172/' /etc/httpd/extra/httpd-info.conf
+/etc/init.d/httpd restart
+siege -b -c 3000 -r 100 localhost/chap2pre.php
+siege -b -c 3000 -r 100 localhost/chap2post.php
+########################################################
+### Chapter 3 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_3 /srv/www
+cd /srv/www
+php chap3_strict_typing.php
+php chap3_strict_typing_modified.php
+php chap3_immutable_arrays.php
+php chap3_variables.php
+php chap3_string_interpolation.php
+php chap3_references.php
+php chap3_dynamic_1.php
+php chap3_dynamic_2.php
+php chap3_dynamic_3.php
+php chap3_dynamic_4.php
+php chap3_memoization_before.php
+php chap3_memoization_after.php
+########################################################
+### Chapter 4 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_4 /srv/www
+cd /srv/www
+php chap4_IO_blocking.php
+php chap4_IO_non_blocking.php
+php chap4_async_race.php
+########################################################
+### Chapter 4 on asclinux/linuxforphp-8.1:7.0.29-zts ###
+########################################################
+mv /srv/www /srv/www.OLD
+ln -s /srv/fasterweb/chapter_4 /srv/www
+cd /srv/www
+pecl install pthreads
+echo "extension=pthreads.so" >> /etc/php.ini
+php -v
+php -i
+php chap4_pthreads.php
+cd /srv/www/react
+php composer.phar self-update
+php composer.phar install
+cd examples
+php parallel-download.php
+php tcp-chat.php
+telnet localhost 4000
+php scalability.php
+wget -nv -O - http://localhost:8000
+wget -nv -O - http://localhost:8001
+wget -nv -O - http://localhost:8002
+wget -nv -O - http://localhost:8003
+wget -nv -O - http://localhost:8004
+wget -nv -O - http://localhost:8005
+wget -nv -O - http://localhost:8006
+wget -nv -O - http://localhost:8007
+wget -nv -O - http://localhost:8008
+wget -nv -O - http://localhost:8009
+########################################################
+### Chapter 5 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_5 /srv/www
+cd /srv/www
+mysql -uroot
+# MariaDB > USE sakila;
+# MariaDB > SELECT * FROM actor WHERE first_name = ‘AL’;
+# MariaDB > EXPLAIN SELECT * FROM actor WHERE first_name= ‘AL’;
+# MariaDB > CREATE INDEX idx_first_name ON actor(first_name);
+# MariaDB > EXPLAIN SELECT first_name FROM actor WHERE first_name = ‘AL’;
+# MariaDB > exit
+mysqlslap --user=root --host=localhost --concurrency=1000 --number-of-queries=10000 --create-schema=sakila --query="SELECT * FROM actor WHERE first_name = 'AL';" --delimiter=";" --verbose --iterations=2 --debug-info
+mysqlslap --user=root --host=localhost --concurrency=1000 --number-of-queries=10000 --create-schema=sakila --query="SELECT first_name FROM actor WHERE first_name = 'AL';" --delimiter=";" --verbose --iterations=2 --debug-info
+sed -i '/myisam_sort_buffer_size =/a performance_schema = ON' /etc/mysql/my.cnf
+sed -i '/performance_schema =/a performance-schema-instrument = "stage/%=ON"' /etc/mysql/my.cnf
+sed -i '/performance-schema-instrument =/a performance-schema-consumer-events-stages-current = ON' /etc/mysql/my.cnf
+sed -i '/performance-schema-consumer-events-stages-current =/a performance-schema-consumer-events-stages-history = ON' /etc/mysql/my.cnf
+sed -i '/performance-schema-consumer-events-stages-history =/a performance-schema-consumer-events-stages-history-long = ON' /etc/mysql/my.cnf
+/etc/init.d/mysql restart
+mysql -uroot
+# MariaDB > USE performance_schema;
+# MariaDB > UPDATE setup_instruments SET ENABLED = 'YES', TIMED = 'YES';
+# MariaDB > UPDATE setup_consumers SET ENABLED = 'YES';
+# MariaDB > SHOW VARIABLES LIKE 'performance_schema';
+# MariaDB > SELECT film.film_id
+#         > FROM film
+#         > WHERE film.rating = 'G'
+#         > AND film.film_id NOT IN (
+#             > SELECT film.film_id
+#             > FROM rental
+#             > LEFT JOIN inventory ON rental.inventory_id = inventory.inventory_id
+#             > LEFT JOIN film ON inventory.film_id = film.film_id
+#         > );
+# MariaDB > EXPLAIN SELECT film.film_id
+#         > FROM film
+#         > WHERE film.rating = 'G'
+#         > AND film.film_id NOT IN (
+#             > SELECT film.film_id
+#             > FROM rental
+#             > LEFT JOIN inventory ON rental.inventory_id = inventory.inventory_id
+#             > LEFT JOIN film ON inventory.film_id = film.film_id
+#         > );
+# MariaDB > SELECT EVENT_ID, TRUNCATE(TIMER_WAIT/1000000000000,6) as Duration, SQL_TEXT
+#         > FROM performance_schema.events_statements_history_long WHERE SQL_TEXT like '%NOT IN%';
+# MariaDB > SELECT event_name AS Stage, TRUNCATE(TIMER_WAIT/1000000000000,6) AS Duration
+#         > FROM performance_schema.events_stages_history_long WHERE NESTING_EVENT_ID=43;
+# MariaDB > SELECT film.film_id
+#         > FROM rental
+#         > INNER JOIN inventory ON rental.inventory_id = inventory.inventory_id
+#         > RIGHT JOIN film ON inventory.film_id = film.film_id
+#         > WHERE film.rating = 'G'
+#         > AND rental.rental_id IS NULL
+#         > GROUP BY film.film_id;
+# MariaDB > EXPLAIN SELECT film.film_id
+#         > FROM rental
+#         > INNER JOIN inventory ON rental.inventory_id = inventory.inventory_id
+#         > RIGHT JOIN film ON inventory.film_id = film.film_id
+#         > WHERE film.rating = 'G'
+#         > AND rental.rental_id IS NULL
+#         > GROUP BY film.film_id;
+# MariaDB > SELECT EVENT_ID, TRUNCATE(TIMER_WAIT/1000000000000,6) as Duration, SQL_TEXT
+#         > FROM performance_schema.events_statements_history_long WHERE SQL_TEXT like '%GROUP BY%';
+# MariaDB > SELECT event_name AS Stage, TRUNCATE(TIMER_WAIT/1000000000000,6) AS Duration
+#         > FROM performance_schema.events_stages_history_long WHERE NESTING_EVENT_ID=22717;
+# MariaDB > exit
+cd /srv/www
+wget -O dbt2-0.37.tar.gz https://master.dl.sourceforge.net/project/osdldbt/dbt2/0.37/dbt2-0.37.tar.gz
+tar -xvf dbt2-0.37.tar.gz
+cd dbt2-0.37
+./configure --with-mysql
+make
+make install
+cpan install Statistics::Descriptive
+mkdir -p /srv/mysql/dbt2-tmp-data/dbt2-w3
+./src/datagen -w 3 -d /srv/mysql/dbt2-tmp-data/dbt2-w3 --mysql
+vi scripts/mysql/mysql_load_db.sh
+./scripts/mysql/mysql_load_db.sh -d dbt2 -f /srv/mysql/dbt2-tmp-data/dbt2-w3 -s /run/mysqld/mysqld.sock -u root
+./scripts/run_mysql.sh -n dbt2 -o /run/mysqld/mysqld.sock -u root -w 3 -t 300 -c 20
+cd /srv/www
+wget -O sysbench-0.4.12.14.tar.gz https://downloads.mysql.com/source/sysbench-0.4.12.14.tar.gz
+tar -xvf sysbench-0.4.12.14.tar.gz
+cd sysbench-0.4.12.14
+./configure
+make
+make install
+sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=test --mysql-user=root prepare
+sysbench --test=oltp --oltp-table-size=1000000 --mysql-db=test --mysql-user=root --max-time=60 --oltp-read-only=on --max-requests=0 --num-threads=8 run
+########################################################
+### Chapter 6 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_6 /srv/www
+cd /srv
+wget -O phpMyAdmin-4.7.7-all-languages.zip https://files.phpmyadmin.net/phpMyAdmin/4.7.7/phpMyAdmin-4.7.7-all-languages.zip
+unzip phpMyAdmin-4.7.7-all-languages.zip
+cp phpMyAdmin-4.7.7-all-languages/config.sample.inc.php phpMyAdmin-4.7.7-all-languages/config.inc.php
+sed -i "s/AllowNoPassword'] = false/AllowNoPassword'] = true/" phpMyAdmin-4.7.7-all-languages/config.inc.php
+cd fasterweb/chapter_6
+ln -s ../../phpMyAdmin-4.7.7-all-languages ./phpmyadmin
+mysql -uroot test < /srv/www/employees.sql
+mysql -uroot
+# MariaDB > SELECT CONCAT_WS('->', t1.last_name, t2.last_name, t3.last_name, t4.last_name, t5.last_name, t6.last_name) AS path
+#         > FROM employees AS t1
+#         > RIGHT JOIN employees AS t2 ON t2.superior = t1.id
+#         > RIGHT JOIN employees AS t3 ON t3.superior = t2.id
+#         > RIGHT JOIN employees AS t4 ON t4.superior = t3.id
+#         > RIGHT JOIN employees AS t5 ON t5.superior = t4.id
+#         > RIGHT JOIN employees AS t6 ON t6.superior = t5.id
+#         > WHERE t1.superior IS NULL
+#         > ORDER BY path;
+# MariaDB > SELECT EVENT_ID, TRUNCATE(TIMER_WAIT/1000000000000,6) as Duration, SQL_TEXT
+#         > FROM performance_schema.events_statements_history_long WHERE SQL_TEXT like '%RIGHT JOIN%';
+# MariaDB > SELECT event_name AS Stage, TRUNCATE(TIMER_WAIT/1000000000000,6) AS Duration
+#         > FROM performance_schema.events_stages_history_long WHERE NESTING_EVENT_ID=126;
+# MariaDB > WITH RECURSIVE hierarchy_list AS (
+#         >     SELECT id, superior, CONVERT(last_name, CHAR(100)) AS path
+#         >     FROM employees
+#         >     WHERE superior IS NULL
+#         >     UNION ALL
+#         >     SELECT child.id, child.superior, CONVERT(CONCAT(parent.path, '->', child.last_name), CHAR(100)) AS path
+#         >     FROM employees AS child
+#         >     INNER JOIN hierarchy_list AS parent ON (child.superior = parent.id)
+#         > )
+#         > SELECT path
+#         > FROM hierarchy_list
+#         > ORDER BY path;
+# MariaDB > SELECT EVENT_ID, TRUNCATE(TIMER_WAIT/1000000000000,6) as Duration, SQL_TEXT
+#         > FROM performance_schema.events_statements_history_long WHERE SQL_TEXT like '%WITH RECURSIVE%';
+# MariaDB > SELECT event_name AS Stage, TRUNCATE(TIMER_WAIT/1000000000000,6) AS Duration
+#         > FROM performance_schema.events_stages_history_long WHERE NESTING_EVENT_ID=259;
+# MariaDB > SELECT id, COUNT(*) AS Total, COUNT(CASE WHEN superior IS NOT NULL THEN id END) AS 'Number of superiors'
+#         > FROM employees
+#         > WHERE id = 2;
+# MariaDB > SELECT DISTINCT superior AS manager_id, (SELECT last_name FROM employees WHERE id = manager_id) AS last_name, SUM(salary) OVER(PARTITION BY superior) AS 'payroll per manager'
+#         > FROM employees
+#         > WHERE superior IS NOT NULL
+#         > ORDER BY superior;
+# MariaDB > SELECT id, last_name, salary, superior AS manager_id, (SELECT last_name FROM employees WHERE id = manager_id) AS manager_last_name, SUM(salary) OVER(PARTITION BY superior ORDER BY manager_last_name, salary DESC, id) AS payroll_per_manager
+#         > FROM employees
+#         > WHERE superior IS NOT NULL
+#         > ORDER BY manager_last_name, salary DESC, id;
+# MariaDB > SELECT id, last_name, salary, superior AS manager_id, SUM(salary) OVER(PARTITION BY superior ORDER BY manager_id, salary DESC, id) AS payroll_per_manager
+#         > FROM employees
+#         > WHERE superior IS NOT NULL
+#         > ORDER BY manager_id, salary DESC, id;
+# MariaDB > SELECT superior AS manager_id, SUM(salary)
+#         > FROM employees
+#         > WHERE superior IS NOT NULL
+#         > GROUP BY manager_id, id, salary;
+# MariaDB > SELECT superior AS manager_id, SUM(salary)
+#         > FROM employees
+#         > WHERE superior IS NOT NULL
+#         > GROUP BY manager_id, salary WITH ROLLUP;
+# MariaDB > exit
+mysql -uroot test < /srv/www/json_example.sql
+mysql -uroot
+# MariaDB > SELECT id,
+#         >    JSON_VALUE(json, "$.name") AS name,
+#         >    JSON_VALUE(json, "$.roles[0]") AS main_role,
+#         >    JSON_VALUE(json, "$.active") AS active
+#         > FROM json_example
+#         > WHERE id = 1;
+# MariaDB > INSERT INTO `json_example` (`id`, `json`) VALUES (NULL, 'test');
+# MariaDB > exit
+/etc/init.d/postgresql start
+cd /srv
+wget --no-check-certificate -O phpPgAdmin-5.1.tar.gz https://superb-sea2.dl.sourceforge.net/project/phppgadmin/phpPgAdmin%20%5Bstable%5D/phpPgAdmin-5.1/phpPgAdmin-5.1.tar.gz
+tar -xvf phpPgAdmin-5.1.tar.gz
+sed -i "s/extra_login_security'] = true/extra_login_security'] = false/" phpPgAdmin-5.1/conf/config.inc.php
+cd fasterweb/chapter_6
+ln -s ../../phpPgAdmin-5.1 ./phppgadmin
+cd /srv/www
+su postgres
+psql test < sales.sql
+psql
+postgres=# SELECT
+#             SUM(total) as total,
+#             SUM(total) FILTER(WHERE closed IS TRUE) as transaction_complete,
+#             year
+#          FROM
+#             sales
+#          GROUP BY
+#             year;
+postgres=# SELECT
+#              film.id,
+#              film.title,
+#              actor_bio.name,
+#              actor_bio.biography
+#          FROM film,
+#              LATERAL (SELECT
+#                           actor.name
+#                           actor.biography,
+#                       FROM actor
+#                       WHERE actor.film_id = film.id) AS actor_bio;
+postgres=# \q
+########################################################
+### Chapter 7 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_7 /srv/www
+cd /srv/www
+########################################################
+### Chapter 8 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_8 /srv/www
+cd /srv/www
+########################################################
+### Chapter 9 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_9 /srv/www
+cd /srv/www
+cat >>/etc/php.ini << EOF
+[OpCache]
+zend_extension = $( php -i | grep extensions | awk '{print $3}' )/opcache.so
+EOF
+sed -i 's/;opcache.enable=1/opcache.enable=1/' /etc/php.ini
+sed -i 's/Proxy "fcgi:\/\/127.0.0.1:9000"/Proxy "unix:\/run\/php-fpm.sock|fcgi:\/\/localhost\/"/' /etc/httpd/httpd.conf
+sed -i 's/# SetHandler "proxy:unix:/SetHandler "proxy:unix:/' /etc/httpd/httpd.conf
+sed -i 's/SetHandler "proxy:fcgi:/# SetHandler "proxy:fcgi:/' /etc/httpd/httpd.conf
+sed -i 's/listen = 127.0.0.1:9000/; listen = 127.0.0.1:9000\nlisten = \/run\/php-fpm.sock/' /etc/php-fpm.d/www.conf
+/etc/init.d/php-fpm restart
+chown apache:apache /run/php-fpm.sock
+/etc/init.d/httpd restart
+########################################################
+### Chapter 9 on asclinux/linuxforphp-8.1:src ###
+########################################################
+pip install --upgrade pip
+pip install docutils sphinx
+cd /tmp
+wget https://github.com/varnishcache/varnish-cache/archive/varnish-6.0.0.tar.gz
+tar -xvf varnish-6.0.0.tar.gz
+cd varnish-cache-varnish-6.0.0/
+sh autogen.sh
+sh configure
+make
+make install
+varnishd -a 0.0.0.0:80 -T 0.0.0.0:6082 -b 172.17.0.2:80
+#########################################################
+### Chapter 10 on asclinux/linuxforphp-8.1:7.1.16-nts ###
+#########################################################
+rm /srv/www
+ln -s /srv/fasterweb/chapter_10 /srv/www
+cd /srv/www

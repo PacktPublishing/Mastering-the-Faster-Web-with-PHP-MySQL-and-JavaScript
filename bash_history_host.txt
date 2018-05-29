@@ -1,0 +1,27 @@
+#################
+### Chapter 1 ###
+#################
+git clone https://github.com/andrewscaya/fasterweb
+cd fasterweb/
+docker run -it --rm -p 8181:80 -v ${PWD}/:/srv/fasterweb asclinux/linuxforphp-8.1:7.1.16-nts /bin/bash
+#################
+### Chapter 2 ###
+#################
+docker run -d --name influxdb -p 8086:8086 andrewscaya/influxdb
+docker network inspect bridge
+docker run --rm andrewscaya/telegraf -sample-config > telegraf.conf
+docker run --net=container:influxdb -v ${PWD}/telegraf.conf:/etc/telegraf/telegraf.conf:ro andrewscaya/telegraf
+docker run -d --name grafana -p 3000:3000 andrewscaya/grafana
+#################
+### Chapter 4 ###
+#################
+docker run -it --rm -p 8282:80 -v ${PWD}/:/srv/fasterweb asclinux/linuxforphp-8.1:7.0.29-zts /bin/bash
+docker exec -it $( docker ps -q | awk '{ print $1 }' ) /bin/bash
+#################
+### Chapter 9 ###
+#################
+docker run --rm -it -p 8383:80 asclinux/linuxforphp-8.1:src /bin/bash -c "cd ; wget -O tmp http://bit.ly/2jheBrr ; /bin/bash ./tmp 7.2.5 nts ; echo '<?php phpinfo();' > /srv/www/index.php ; /bin/bash"
+docker run -it -p 6082:6082 -p 8484:80 asclinux/linuxforphp-8.1:src /bin/bash
+docker network inspect bridge
+curl -v 172.17.0.3 | grep Forwarded
+curl -v https://linuxforphp.net

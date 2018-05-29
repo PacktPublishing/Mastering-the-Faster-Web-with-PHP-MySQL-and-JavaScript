@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS Loops</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="myJS()" style="margin:0;">
+
+<div id="main"></div>
+
+<script type="text/javascript">
+
+    function myJS()
+    {
+        let oMyString = new String("abcdefg");
+
+        let result = "";
+
+        for(let i = 0; i < oMyString.length; i++) {
+            result += i + " = " + oMyString.charAt(i) + ", ";
+            console.log(oMyString);
+        }
+
+        alert(result);
+    }
+
+</script>
+
+</body>
+
+</html>

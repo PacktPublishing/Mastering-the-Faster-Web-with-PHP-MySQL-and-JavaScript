@@ -1,0 +1,15 @@
+{
+    "name": "fasterweb/react",
+    "description": "Learning ReactPHP.",
+    "type": "project",
+    "require": {
+        "react/react": "^0.4.2"
+    },
+    "license": "GPLv2",
+    "authors": [
+        {
+            "name": "Andrew Caya",
+            "email": "andrewscaya@yahoo.ca"
+        }
+    ]
+}

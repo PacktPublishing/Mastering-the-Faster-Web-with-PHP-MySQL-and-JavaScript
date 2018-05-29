@@ -1,0 +1,14 @@
+CREATE TABLE sales (
+  total DECIMAL(10,2) NOT NULL,
+  closed BOOLEAN NOT NULL DEFAULT FALSE,
+  year INT NOT NULL
+  );
+  
+  INSERT INTO sales (total, closed, year)
+  VALUES
+  (21000.56, FALSE, 2017),
+  (2345.25, TRUE, 2018),
+  (10500.50, FALSE, 2016),
+  (6789.99, TRUE, 2017),
+  (4567.45, TRUE, 2017),
+  (1250.00, FALSE, 2018);

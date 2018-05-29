@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS Performance</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="myJS()" style="margin:0;">
+
+<div id="main"></div>
+
+<script type="text/javascript">
+
+    function myJS()
+    {
+        "use strict";
+
+        function incrementArrayBy2(myArray, len = 1, index = 0)
+        {
+            myArray[index] = index;
+            myArray[index] += 2;
+            return (index === len - 1) ? myArray : incrementArrayBy2(myArray, len, index + 1); // tail call
+        }
+
+        let myArray = [];
+
+        incrementArrayBy2(myArray, 100000000);
+
+        console.log(myArray);
+    }
+
+</script>
+
+</body>
+
+</html>

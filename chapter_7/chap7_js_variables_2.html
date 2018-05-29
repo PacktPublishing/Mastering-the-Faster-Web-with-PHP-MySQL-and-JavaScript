@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS Variables</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body onload="myJS()" style="margin:0;">
+
+<div id="main"></div>
+
+<script type="text/javascript">
+
+    function myJS()
+    {
+        function MyJSObject(n1, n2)
+        {
+            let number1 = Number(n1);
+            let number2 = Number(n2);
+
+            return {
+                set_number1: function (n1) {
+                    number1 = Number(n1);
+                },
+                set_number2: function (n2) {
+                    number2 = Number(n2);
+                },
+                sum: function ( ) {
+                    return number1 + number2;
+                }
+            };
+        }
+
+        let oApp1 = new MyJSObject(3, 4);
+        alert( oApp1.sum() ); // 7
+
+        let app2 = MyJSObject(1, 2);
+        alert( app2.sum() ); // 3
+        alert( oApp1.sum() ); // 7
+        alert( window.number1 ); // undefined
+    }
+
+</script>
+
+</body>
+
+</html>

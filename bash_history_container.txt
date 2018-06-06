@@ -35,12 +35,17 @@ echo -e "xdebug.remote_connect_back = 1\n" >> /etc/php.ini
 echo -e "xdebug.idekey = PHPSTORM\n" >> /etc/php.ini
 echo -e "xdebug.profiler_enable = 1\n" >> /etc/php.ini
 echo -e "xdebug.profiler_enable_trigger = 1\n" >> /etc/php.ini
-vi /etc/php.ini
 /etc/init.d/php-fpm restart
+tail -50 /etc/php.ini
+rm /srv/www
+ln -s /srv/fasterweb /srv/www
+cd /srv/www
 ifconfig
 ls -lsa /tmp
 cat /tmp/cachegrind.out.411
-cd
+rm /srv/www
+ln -s /srv/fasterweb/chapter_1 /srv/www
+cd /srv/www
 wget -O sakila-db.tar.gz https://downloads.mysql.com/docs/sakila-db.tar.gz
 tar -xzvf sakila-db.tar.gz
 mysql -uroot < sakila-db/sakila-schema.sql

@@ -9,7 +9,7 @@ This is the code repository for [Mastering The Faster Web with PHP, MySQL, and J
 ## What is this book about?
 This book will get you started with the latest benchmarking, profiling and monitoring tools for PHP, MySQL and JavaScript using Docker-based technologies. From optimizing PHP 7 code to learning asynchronous programming, from implementing Modern SQL solutions to discovering Functional JavaScript techniques, this book covers all the latest developments in Faster Web technologies. You will not only learn to determine the best optimization strategies, but also how to implement them. 
 
-This book covers the following exciting features: <First 5 What you'll learn points>
+This book covers the following exciting features: 
 * Install, confgure, and use profling and benchmarking testing tools
 * Understand how to recognize optimizable data structures and functions to effectively optimize a PHP7 application
 * Diagnose bad SQL query performance and discover ways to optimize it

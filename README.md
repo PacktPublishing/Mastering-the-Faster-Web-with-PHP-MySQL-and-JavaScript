@@ -1,3 +1,8 @@
+## $5 Tech Unlocked 2021!
+[Buy and download this Book for only $5 on PacktPub.com](https://www.packtpub.com/product/mastering-the-faster-web-with-php-mysql-and-javascript/9781788392211)
+-----
+*If you have read this book, please leave a review on [Amazon.com](https://www.amazon.com/gp/product/1788392213).     Potential readers can then use your unbiased opinion to help them make purchase decisions. Thank you. The $5 campaign         runs from __December 15th 2020__ to __January 13th 2021.__*
+
 # Mastering The Faster Web with PHP, MySQL, and JavaScript
 
 <a href="https://www.packtpub.com/web-development/mastering-faster-web-php-mysql-and-javascript?utm_source=github&utm_medium=repository&utm_campaign=9781788392211"><img src="https://www.packtpub.com/sites/default/files/B08060_MockupCover.png" alt="Mastering The Faster Web with PHP, MySQL, and JavaScript" height="256px" align="right"></a>

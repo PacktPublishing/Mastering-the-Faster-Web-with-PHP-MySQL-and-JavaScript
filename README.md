@@ -1,7 +1,3 @@
-## [Get this title for $10 on Packt's Spring Sale](https://www.packt.com/B08060?utm_source=github&utm_medium=packt-github-repo&utm_campaign=spring_10_dollar_2022)
------
-For a limited period, all eBooks and Videos are only $10. All the practical content you need \- by developers, for developers
-
 # Mastering The Faster Web with PHP, MySQL, and JavaScript
 
 <a href="https://www.packtpub.com/web-development/mastering-faster-web-php-mysql-and-javascript?utm_source=github&utm_medium=repository&utm_campaign=9781788392211"><img src="https://www.packtpub.com/sites/default/files/B08060_MockupCover.png" alt="Mastering The Faster Web with PHP, MySQL, and JavaScript" height="256px" align="right"></a>
